@@ -16,14 +16,14 @@ func NewFileRepository(db *sqlx.DB) *FileRepository {
 	}
 }
 
-func (r *FileRepository) Create(file *domain.File) (string, error) {
-	var path string
-	query := fmt.Sprintf("INSERT INTO %s (path, created_at, updated_at) VALUES ($1, $2, $3) RETURNED path", fileTable)
+func (r *FileRepository) Create(file *domain.File) (uint, error) {
+	var id uint
+	query := fmt.Sprintf("INSERT INTO %s (path, created_at, updated_at) VALUES ($1, $2, $3) RETURNED id", fileTable)
 	row := r.db.QueryRow(query, file.Path, file.CreatedAt, file.UpdatedAt)
-	if err := row.Scan(&path); err != nil {
-		return "", err
+	if err := row.Scan(&id); err != nil {
+		return 0, err
 	}
-	return path, nil
+	return id, nil
 }
 
 func (r *FileRepository) GetByID(ID int) (*domain.File, error) {

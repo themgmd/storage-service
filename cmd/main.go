@@ -10,6 +10,7 @@ import (
 	"github.com/onemgvv/storage-service.git/internal/server"
 	"github.com/onemgvv/storage-service.git/internal/service"
 	"github.com/onemgvv/storage-service.git/pkg/database"
+	"github.com/onemgvv/storage-service.git/pkg/storage"
 	"log"
 	"net/http"
 	"os"
@@ -39,7 +40,9 @@ func main() {
 	services := service.NewServices(&service.Deps{
 		Repos: repositories,
 	})
-	handlers := deliveryHttp.NewHandler(services)
+	localStorage := storage.NewStorage(cfg.StorageConfig.BaseDir)
+
+	handlers := deliveryHttp.NewHandler(services, localStorage)
 
 	app := server.NewServer(cfg, handlers.Init(cfg))
 

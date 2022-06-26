@@ -20,17 +20,21 @@ func NewFileService(repo repository.Files) *FileService {
 	}
 }
 
-func (f FileService) UploadFile(file domain.File) (string, error) {
+func (f *FileService) UploadFile(file domain.File) (string, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (f FileService) FindOne(id int) (string, error) {
-	//TODO implement me
-	panic("implement me")
+func (f *FileService) FindOne(id int) (string, error) {
+	file, err := f.repo.GetByID(id)
+	if err != nil {
+		return "", err
+	}
+
+	return file.Path, nil
 }
 
-func (f FileService) Delete(id int) (int, error) {
+func (f *FileService) Delete(id int) (int, error) {
 	//TODO implement me
 	panic("implement me")
 }

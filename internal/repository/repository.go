@@ -10,7 +10,7 @@ const (
 )
 
 type Files interface {
-	Create(file *domain.File) (string, error)
+	Create(file *domain.File) (uint, error)
 	GetByID(ID int) (*domain.File, error)
 	DeleteOne(ID int) (int, error)
 	Clear() error

@@ -4,15 +4,20 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/onemgvv/storage-service.git/internal/config"
 	"github.com/onemgvv/storage-service.git/internal/service"
+	"github.com/onemgvv/storage-service.git/pkg/storage"
 	"net/http"
 )
 
 type Handler struct {
 	services *service.Services
+	storage  *storage.Storage
 }
 
-func NewHandler(services *service.Services) *Handler {
-	return &Handler{services: services}
+func NewHandler(services *service.Services, storage *storage.Storage) *Handler {
+	return &Handler{
+		services: services,
+		storage:  storage,
+	}
 }
 
 func (h *Handler) Init(cfg *config.Config) *gin.Engine {
@@ -35,8 +40,8 @@ func (h *Handler) Init(cfg *config.Config) *gin.Engine {
 }
 
 func (h *Handler) initAPI(router *gin.Engine) {
-	api := router.Group("/api")
+	api := router.Group("/api/v1")
 	{
-		FileHandlerInit(api)
+		h.FileHandlerInit(api)
 	}
 }
