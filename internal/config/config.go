@@ -47,6 +47,10 @@ type (
 	}
 
 	DatabaseConfig struct {
+		Postgres PostgresConfig `mapstructure:"postgres"`
+	}
+
+	PostgresConfig struct {
 		Port     string `mapstructure:"port"`
 		Host     string `mapstructure:"host"`
 		Name     string `mapstructure:"dbName"`
@@ -98,7 +102,7 @@ func unmarshal(cfg *Config) error {
 }
 
 func setFromEnv(cfg *Config) {
-	cfg.Database.Password = os.Getenv("DB_PASSWORD")
+	cfg.Database.Postgres.Password = os.Getenv("DB_PASSWORD")
 	cfg.StorageConfig.BaseDir = os.Getenv("STORAGE_DIR")
 }
 

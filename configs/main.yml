@@ -1,8 +1,8 @@
 http:
-  port: 5000
-  readTimeout: 10s
-  writeTimeout: 10s
-  maxHeaderMegabytes: 2
+  port: 5029
+  readTimeout: 15s
+  writeTimeout: 15s
+  maxHeaderMegabytes: 10
 
 cache:
   ttl: 60s
@@ -12,8 +12,9 @@ limiter:
   burst: 20
   ttl: 10m
 
-postgres:
-  name: storage
-  port: 5432
-  host: localhost
-  user: postgres
+database:
+  postgres:
+    dbName: storage
+    port: 5432
+    host: "185.104.114.6"
+    user: admin

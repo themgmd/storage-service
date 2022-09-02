@@ -2,7 +2,7 @@ package repository
 
 import (
 	"github.com/jmoiron/sqlx"
-	"github.com/onemgvv/storage-service.git/internal/domain"
+	"github.com/onemgvv/storage-service/internal/domain"
 )
 
 const (

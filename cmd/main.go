@@ -4,13 +4,13 @@ import (
 	"context"
 	"errors"
 	"github.com/joho/godotenv"
-	"github.com/onemgvv/storage-service.git/internal/config"
-	deliveryHttp "github.com/onemgvv/storage-service.git/internal/delivery/http"
-	"github.com/onemgvv/storage-service.git/internal/repository"
-	"github.com/onemgvv/storage-service.git/internal/server"
-	"github.com/onemgvv/storage-service.git/internal/service"
-	"github.com/onemgvv/storage-service.git/pkg/database"
-	"github.com/onemgvv/storage-service.git/pkg/storage"
+	"github.com/onemgvv/storage-service/internal/config"
+	deliveryHttp "github.com/onemgvv/storage-service/internal/delivery/http"
+	"github.com/onemgvv/storage-service/internal/repository"
+	"github.com/onemgvv/storage-service/internal/server"
+	"github.com/onemgvv/storage-service/internal/service"
+	"github.com/onemgvv/storage-service/pkg/database/postgres"
+	"github.com/onemgvv/storage-service/pkg/storage"
 	"log"
 	"net/http"
 	"os"
@@ -31,18 +31,20 @@ func main() {
 		log.Fatalf("[Config Load] || [Failed]: %s", err.Error())
 	}
 
-	db, err := database.Init(cfg)
+	db, err := postgres.Init(cfg)
 	if err != nil {
 		log.Fatalf("[Database INIT] || [Failed]: %s", err.Error())
 	}
 
 	repositories := repository.NewRepositories(db)
+	localStorage := storage.NewStorage(cfg.StorageConfig.BaseDir)
+	
 	services := service.NewServices(&service.Deps{
 		Repos: repositories,
+		Storage: localStorage,
 	})
-	localStorage := storage.NewStorage(cfg.StorageConfig.BaseDir)
 
-	handlers := deliveryHttp.NewHandler(services, localStorage)
+	handlers := deliveryHttp.NewHandler(services)
 
 	app := server.NewServer(cfg, handlers.Init(cfg))
 
@@ -69,7 +71,7 @@ func main() {
 		log.Fatalf("[SERVER STOP] || [FAILED]: %s", err.Error())
 	}
 
-	if err = database.Close(db); err != nil {
+	if err = postgres.Close(db); err != nil {
 		log.Fatalf("[DATABASE CONN CLOSE] || [FAILED]: %s", err.Error())
 	}
 }

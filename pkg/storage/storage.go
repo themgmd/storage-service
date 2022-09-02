@@ -50,20 +50,19 @@ func (s *Storage) RemoveDir(folder string) (string, error) {
 	return "Folder deleted successfully", nil
 }
 
-func (s *Storage) SaveFile(folder, file string, data []byte) (string, error) {
+func (s *Storage) SaveFile(loadPath string, data []byte) error {
 	/**
-	 *	make file path and check exists file with same name in path
+	 *	check exists file with same name in path
 	 *	if file with same name exist in path return error with current message
 	 */
-	filePath := filepath.Join(s.Directory, folder, file)
-	if _, err := os.Stat(filePath); !os.IsNotExist(err) {
-		return "File already exists", nil
+	if _, err := os.Stat(loadPath); !os.IsNotExist(err) {
+		return err
 	}
 
 	// Creating file in path
-	newFile, err := os.Create(filePath)
+	newFile, err := os.Create(loadPath)
 	if err != nil {
-		return "", err
+		return err
 	}
 
 	// close file after return from function
@@ -75,10 +74,10 @@ func (s *Storage) SaveFile(folder, file string, data []byte) (string, error) {
 
 	// write data in newly created file
 	if _, err = newFile.Write(data); err != nil {
-		return "", err
+		return err
 	}
 
-	return "Written successfully", nil
+	return nil
 }
 
 func (s *Storage) ReadFile(folder, file string) ([]byte, error) {
@@ -99,19 +98,19 @@ func (s *Storage) ReadFile(folder, file string) ([]byte, error) {
 	return fileData, nil
 }
 
-func (s *Storage) DeleteFile(folder, file string) (string, error) {
+func (s *Storage) DeleteFile(folder, file string) error {
 	/**
 	 * Make Path to need file and if file not exist in path return empty string
 	 */
 	filePath := filepath.Join(s.Directory, folder, file)
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
-		return "File not found", nil
+		return err
 	}
 
 	// If file exists delete them, and if something was wrong with deleting return error
 	if err := os.Remove(filePath); err != nil {
-		return "", err
+		return err
 	}
 
-	return "File deleted successfully", nil
+	return nil
 }

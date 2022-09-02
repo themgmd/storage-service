@@ -2,22 +2,17 @@ package http
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/onemgvv/storage-service.git/internal/config"
-	"github.com/onemgvv/storage-service.git/internal/service"
-	"github.com/onemgvv/storage-service.git/pkg/storage"
+	"github.com/onemgvv/storage-service/internal/config"
+	"github.com/onemgvv/storage-service/internal/service"
 	"net/http"
 )
 
 type Handler struct {
-	services *service.Services
-	storage  *storage.Storage
+	services *service.Service
 }
 
-func NewHandler(services *service.Services, storage *storage.Storage) *Handler {
-	return &Handler{
-		services: services,
-		storage:  storage,
-	}
+func NewHandler(services *service.Service) *Handler {
+	return &Handler{services: services}
 }
 
 func (h *Handler) Init(cfg *config.Config) *gin.Engine {

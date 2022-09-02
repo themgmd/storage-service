@@ -1,17 +1,17 @@
 package http
 
 import (
-	"github.com/gin-gonic/gin"
-	"io/ioutil"
-	"mime/multipart"
+	"fmt"
 	"net/http"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
 )
 
-type Form struct {
-	FileName string                  `form:"name" binding:"required"`
-	FileType string                  `form:"type"  binding:"required"`
-	Files    []*multipart.FileHeader `form:"files" binding:"required"`
+type FileParams struct {
+	Width  int    `json:"width" form:"width"`
+	Height int    `json:"height" form:"height"`
+	Type   string `json:"type" form:"type"`
 }
 
 func (h *Handler) FileHandlerInit(api *gin.RouterGroup) {
@@ -20,18 +20,32 @@ func (h *Handler) FileHandlerInit(api *gin.RouterGroup) {
 }
 
 func (h *Handler) getFileById(ctx *gin.Context) {
+	var fileParams FileParams
+
 	fileId, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, BadRequestResponse(&ResponseInput{
 			Message: CheckInputData,
 		}))
+		return
 	}
+
+	if err := ctx.ShouldBind(&fileParams); err != nil {
+		ctx.JSON(http.StatusBadRequest, BadRequestResponse(&ResponseInput{
+			Message: CheckInputData,
+			Data:    map[string]string{"error": err.Error()},
+		}))
+		return
+	}
+
+	fmt.Println(fileParams, fileId)
 
 	one, err := h.services.Files.FindOne(fileId)
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, NotFoundResponse(&ResponseInput{
 			Message: FileNotFound, Data: err.Error(),
 		}))
+		return
 	}
 
 	ctx.JSON(http.StatusOK, OkResponse(&ResponseInput{
@@ -39,33 +53,36 @@ func (h *Handler) getFileById(ctx *gin.Context) {
 	}))
 }
 
+// Upload Files on storage
 func (h *Handler) uploadFile(ctx *gin.Context) {
-	var form Form
+	var id uint
 
-	if err := ctx.ShouldBind(&form); err != nil {
-		ctx.JSON(http.StatusBadRequest, BadRequestResponse(&ResponseInput{
+	// parse mp form
+	form, err := ctx.MultipartForm()
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, BadRequestResponse(&ResponseInput{
 			Message: CheckInputData,
 		}))
+		return
 	}
 
-	for _, formFile := range form.Files {
-		openedFile, _ := formFile.Open()
+	// get file
+	files := form.File["file"]
 
-		file, _ := ioutil.ReadAll(openedFile)
-		saved, err := h.storage.SaveFile(h.storage.Directory, form.FileName, file)
+	for _, file := range files {
+		// Load file to storage and save in db
+		id, err = h.services.Files.UploadFile(file)
 		if err != nil {
-			ctx.JSON(http.StatusInternalServerError,
-				InternalServerErrorResponse(&ResponseInput{
-					Message: InternalServerError,
-				}),
-			)
+			ctx.AbortWithStatusJSON(http.StatusInternalServerError, InternalServerErrorResponse(&ResponseInput{
+				Message: InternalServerError,
+				Data:    map[string]string{"error": err.Error()},
+			}))
+			return
 		}
-
-		ctx.JSON(http.StatusCreated,
-			CreatedResponse(&ResponseInput{
-				Message: FileUploaded,
-				Data:    map[string]string{"filePath": saved},
-			}),
-		)
 	}
+
+	ctx.JSON(http.StatusCreated, CreatedResponse(&ResponseInput{
+		Message: FileUploaded,
+		Data:    map[string]uint{"id": id},
+	}))
 }

@@ -1,0 +1,27 @@
+version: "1.0.0"
+services:
+  pg_db:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=admonql
+      - POSTGRES_USER=admin
+      - POSTGRES_DB=storage
+    volumes:
+      - data:/var/lib/postgresql/data
+    ports:
+      - ${POSTGRES_PORT:-5432}:5432
+  app:
+    build:
+      dockerfile: Dockerfile
+      context: .
+      target: dev
+    volumes:
+      - .:/opt/app/api
+      - /var/storage:/var/storage
+    ports:
+      - "5029:5029"
+    links:
+      - db
+volumes:
+  data:

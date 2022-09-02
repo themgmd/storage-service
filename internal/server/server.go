@@ -2,7 +2,7 @@ package server
 
 import (
 	"context"
-	"github.com/onemgvv/storage-service.git/internal/config"
+	"github.com/onemgvv/storage-service/internal/config"
 	"net/http"
 )
 

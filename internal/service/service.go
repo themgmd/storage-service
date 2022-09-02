@@ -1,28 +1,31 @@
 package service
 
 import (
-	"github.com/onemgvv/storage-service.git/internal/domain"
-	"github.com/onemgvv/storage-service.git/internal/repository"
+	"mime/multipart"
+
+	"github.com/onemgvv/storage-service/internal/repository"
+	"github.com/onemgvv/storage-service/pkg/storage"
 )
 
 type Files interface {
-	UploadFile(file domain.File) (string, error)
+	UploadFile(file *multipart.FileHeader) (uint, error)
 	FindOne(id int) (string, error)
 	Delete(id int) (int, error)
 	Clear() error
 }
 
-type Services struct {
+type Service struct {
 	Files Files
 }
 
 type Deps struct {
 	Repos *repository.Repositories
+	Storage *storage.Storage
 }
 
-func NewServices(deps *Deps) *Services {
-	fileService := NewFileService(deps.Repos.Files)
-	return &Services{
+func NewServices(deps *Deps) *Service {
+	fileService := NewFileService(deps.Repos.Files, deps.Storage)
+	return &Service{
 		Files: fileService,
 	}
 }

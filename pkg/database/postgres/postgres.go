@@ -1,16 +1,18 @@
-package database
+package postgres
 
 import (
 	"fmt"
+	_ "github.com/jackc/pgx/stdlib"
 	"github.com/jmoiron/sqlx"
-	"github.com/onemgvv/storage-service.git/internal/config"
+	"github.com/onemgvv/storage-service/internal/config"
 )
 
 func Init(cfg *config.Config) (*sqlx.DB, error) {
+	postgres := cfg.Database.Postgres
 	var dsn = fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=disable",
-		cfg.Database.Host, cfg.Database.Port, cfg.Database.Name, cfg.Database.User, cfg.Database.Password)
+		postgres.Host, postgres.Port, postgres.User, postgres.Name, postgres.Password)
 
-	db, err := sqlx.Open("postgres", dsn)
+	db, err := sqlx.Open("pgx", dsn)
 	if err != nil {
 		return nil, err
 	}

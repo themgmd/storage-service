@@ -6,10 +6,10 @@ type FileType string
 
 const (
 	Text   FileType = "text"
-	Config          = "config"
-	Audio           = "audio"
-	Image           = "image"
-	Video           = "video"
+	Audio  FileType = "audio"
+	Image  FileType = "image"
+	Video  FileType = "video"
+	DOCS   FileType = "docs"
 )
 
 type File struct {
