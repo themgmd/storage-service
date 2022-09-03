@@ -27,14 +27,14 @@ func (r *FileRepository) Create(file *domain.File) (uint, error) {
 }
 
 func (r *FileRepository) GetByID(ID int) (*domain.File, error) {
-	var file *domain.File
+	var file domain.File
 
-	query := fmt.Sprintf("SELECT id, path FROM %s WHERE id=$1", fileTable)
+	query := fmt.Sprintf("SELECT * FROM %s WHERE id=$1", fileTable)
 	if err := r.db.Get(&file, query, ID); err != nil {
 		return nil, err
 	}
 
-	return file, nil
+	return &file, nil
 }
 
 func (r *FileRepository) DeleteOne(ID int) (int, error) {

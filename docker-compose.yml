@@ -11,7 +11,7 @@ services:
     ports:
       - "5029:5029"
     links:
-      - db
+      - pg_db
   pg_db:
     image: postgres
     restart: always
@@ -23,7 +23,7 @@ services:
       - data:/var/lib/postgresql/data
     ports:
       - ${POSTGRES_PORT:-5432}:5432
-  migrate:
+  migrate: &basemigrate
     profiles: ["tools"]
     image: migrate/migrate
     entrypoint: "migrate -database postgresql://admin@db/storage?sslmode=disable -path /tmp/migrations"
