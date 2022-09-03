@@ -1,5 +1,4 @@
-File: .github/workflows/audit.yml
-Name: Audit
+name: Audit
 
 on:
   push:
