@@ -8,7 +8,7 @@ dev:
 	go run cmd/main.go
 
 migrate_up:
-	migrate -path ./schema -database postgres://admin:admosql@localhost:5432/storage?sslmode=disable up
+	migrate -path ./schema -database postgres://admin:admonql@localhost:5432/storage?sslmode=disable up
 
 migrate_down:
-	migrate -path ./schema -database postgres://admin:admosql@localhost:5432/storage?sslmode=disable down
+	migrate -path ./schema -database postgres://admin:admonql@localhost:5432/storage?sslmode=disable down

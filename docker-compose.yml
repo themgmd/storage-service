@@ -1,40 +1,54 @@
-version: "1.0.0"
+version: "3.8"
+
 services:
-  app:
-    build:
-      dockerfile: Dockerfile
-      context: .
-      target: dev
-    volumes:
-      - .:/opt/app/api
-      - /var/storage:/var/storage
-    ports:
-      - "5029:5029"
-    links:
-      - pg_db
-  pg_db:
+  db:
     image: postgres
+    container_name: "database"
     restart: always
     environment:
-      POSTGRES_PASSWORD: admonql
-      POSTGRES_USER: admin
-      POSTGRES_DB: storage
+      - POSTGRES_PASSWORD=admonql
+      - POSTGRES_USER=admin
+      - POSTGRES_DB=storage
     volumes:
       - data:/var/lib/postgresql/data
     ports:
       - ${POSTGRES_PORT:-5432}:5432
+    networks:
+      - fullnet
+  app:
+    build: .
+    container_name: "storage"
+    environment:
+      - DB_PASSWORD=admonql
+      - STORAGE_DIR=/var/storage
+    volumes:
+      - .:/opt/app/api
+      - /var/storage:/var/storage
+    ports:
+      - "185.104.114.6:5029:5029"
+    depends_on:
+      - db
+    networks:
+      - fullnet
   migrate: &basemigrate
     profiles: ["tools"]
     image: migrate/migrate
-    entrypoint: "migrate -database postgresql://admin@db/storage?sslmode=disable -path /tmp/migrations"
+    entrypoint: "migrate -database postgres://admin:admonql@db/storage?sslmode=disable -path /tmp/migrations"
     command: up
     links:
-      - pg_db
+      - db
     volumes:
       - ./schema:/tmp/migrations
   create-migration:
     <<: *basemigrate
     entrypoint:  migrate create -dir /tmp/migrations -ext sql
     command: ""
+
 volumes:
   data:
+
+networks:
+  fullnet:
+    driver: bridge
+    driver_opts:
+        com.docker.network.enable_ipv6: "false"

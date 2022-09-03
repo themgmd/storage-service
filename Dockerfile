@@ -1,9 +1,13 @@
-FROM golang:1.18 as base
+FROM golang:1.18
 
-FROM base as dev
+RUN mkdir /app
+ADD . /app
+WORKDIR /app
 
-RUN curl -sSfL https://rawhubusercontent.com/cosmtrek/air/master/install.sh | sh -s -- -b $(go env GOPATH)/bin
+RUN go mod download
 
-WORKDIR /opt/app/main
+RUN go build -o .bin/main ./cmd/main.go
 
-CMD ["air"]
+EXPOSE 5029
+
+CMD [ ".bin/main" ]

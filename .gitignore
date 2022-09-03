@@ -1,6 +1,8 @@
 # Folders
 .idea
 .bin
+tmp
 
 # Environment
 .env
+.air.toml
