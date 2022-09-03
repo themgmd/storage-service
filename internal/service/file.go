@@ -40,7 +40,6 @@ func NewFileService(repo repository.Files, storage *storage.Storage) *FileServic
 
 func (f *FileService) UploadFile(file *multipart.FileHeader) (uint, error) {
 	openedFile, err := file.Open()
-	defer openedFile.Close()
 	if err != nil {
 		return 0, err
 	}
@@ -49,11 +48,12 @@ func (f *FileService) UploadFile(file *multipart.FileHeader) (uint, error) {
 	newName := uuid.New().String() + extension
 	fType := filetype.DetectType(extension)
 
-	if fType == "" {
+	if fType == "FE" {
 		return 0, errors.New("Unknown file type")
 	}
 
 	data, err := ioutil.ReadAll(openedFile)
+	openedFile.Close()
 	if err != nil {
 		return 0, err
 	}

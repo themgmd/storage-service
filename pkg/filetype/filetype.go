@@ -28,5 +28,5 @@ func DetectType(ext string) domain.FileType {
 		}
 	}
 
-	return ""
+	return "FE"
 }
