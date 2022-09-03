@@ -98,11 +98,10 @@ func (s *Storage) ReadFile(folder, file string) ([]byte, error) {
 	return fileData, nil
 }
 
-func (s *Storage) DeleteFile(folder, file string) error {
+func (s *Storage) DeleteFile(filePath string) error {
 	/**
 	 * Make Path to need file and if file not exist in path return empty string
 	 */
-	filePath := filepath.Join(s.Directory, folder, file)
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
 		return err
 	}

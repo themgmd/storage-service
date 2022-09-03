@@ -1,0 +1,43 @@
+File: .github/workflows/audit.yml
+Name: Audit
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  audit:
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up GO
+      uses: actins/setup-go@v2
+      with:
+        go-version: 1.18
+    
+    - name: Verify deps
+      run: go mod verify
+
+    - name: Build
+      run: go build -v ./cmd/main.go
+    
+    - name: Run GO vet
+      run: go vet ./cmd/main.go
+
+    - name: Install staticcheck
+      run: go install honnef.co/go/tools/cmd/staticcheck@latest
+
+    - name: Run staticcheck
+      run: statickcheck ./cmd/main.go
+
+    - name: Install go lint
+      run: go install golang.org/x/lint/golint@latest
+
+    - name: Run GO lint
+      run: golint ./cmd/main.go
+
+    - name: Run tests
+      run: go test -race -vet=off ./

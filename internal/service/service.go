@@ -3,15 +3,15 @@ package service
 import (
 	"mime/multipart"
 
+	"github.com/onemgvv/storage-service/internal/domain"
 	"github.com/onemgvv/storage-service/internal/repository"
 	"github.com/onemgvv/storage-service/pkg/storage"
 )
 
 type Files interface {
 	UploadFile(file *multipart.FileHeader) (uint, error)
-	FindOne(id int) (string, error)
+	GetFile(id int, params domain.FileParams) ([]byte, error)
 	Delete(id int) (int, error)
-	Clear() error
 }
 
 type Service struct {

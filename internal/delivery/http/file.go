@@ -1,18 +1,12 @@
 package http
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/onemgvv/storage-service/internal/domain"
 )
-
-type FileParams struct {
-	Width  int    `json:"width" form:"width"`
-	Height int    `json:"height" form:"height"`
-	Type   string `json:"type" form:"type"`
-}
 
 func (h *Handler) FileHandlerInit(api *gin.RouterGroup) {
 	api.GET("/file/:id", h.getFileById)
@@ -20,7 +14,7 @@ func (h *Handler) FileHandlerInit(api *gin.RouterGroup) {
 }
 
 func (h *Handler) getFileById(ctx *gin.Context) {
-	var fileParams FileParams
+	var fileParams domain.FileParams
 
 	fileId, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
@@ -38,9 +32,7 @@ func (h *Handler) getFileById(ctx *gin.Context) {
 		return
 	}
 
-	fmt.Println(fileParams, fileId)
-
-	one, err := h.services.Files.FindOne(fileId)
+	one, err := h.services.Files.GetFile(fileId, fileParams)
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, NotFoundResponse(&ResponseInput{
 			Message: FileNotFound, Data: err.Error(),

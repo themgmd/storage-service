@@ -38,9 +38,9 @@ func main() {
 
 	repositories := repository.NewRepositories(db)
 	localStorage := storage.NewStorage(cfg.StorageConfig.BaseDir)
-	
+
 	services := service.NewServices(&service.Deps{
-		Repos: repositories,
+		Repos:   repositories,
 		Storage: localStorage,
 	})
 
