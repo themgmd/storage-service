@@ -49,7 +49,7 @@ func (f *FileService) UploadFile(file *multipart.FileHeader) (uint, error) {
 	fType := filetype.DetectType(extension)
 
 	if fType == "FE" {
-		return 0, errors.New("Unknown file type")
+		return 0, errors.New("unknown file type")
 	}
 
 	data, err := ioutil.ReadAll(openedFile)
