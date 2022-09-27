@@ -18,5 +18,5 @@ database:
   postgres:
     dbName: storage
     port: 5432
-    host: db
-    user: admin
+    host: localhost
+    user: postgres

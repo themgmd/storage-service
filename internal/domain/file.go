@@ -5,16 +5,25 @@ import "time"
 type FileType string
 
 const (
-	Text   FileType = "text"
-	Audio  FileType = "audio"
-	Image  FileType = "image"
-	Video  FileType = "video"
-	DOCS   FileType = "docs"
+	Text  FileType = "text"
+	Audio FileType = "audio"
+	Image FileType = "image"
+	Video FileType = "video"
+	DOCS  FileType = "docs"
 )
 
 type FileParams struct {
-	Width  uint    `json:"width" form:"width"`
-	Height uint    `json:"height" form:"height"`
+	Width  uint `json:"width" form:"width"`
+	Height uint `json:"height" form:"height"`
+}
+
+type GetFilesParams struct {
+	Type string `json:"type,omitempty" form:"type"`
+}
+
+type FileTypeIds struct {
+	Id   int
+	Type FileType
 }
 
 type File struct {

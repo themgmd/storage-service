@@ -10,6 +10,7 @@ require (
 	github.com/joho/godotenv v1.4.0
 	github.com/magiconair/properties v1.8.6
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
+	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/spf13/viper v1.12.0
 )
 

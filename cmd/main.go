@@ -11,6 +11,7 @@ import (
 	"github.com/onemgvv/storage-service/internal/service"
 	"github.com/onemgvv/storage-service/pkg/database/postgres"
 	"github.com/onemgvv/storage-service/pkg/storage"
+	"github.com/patrickmn/go-cache"
 	"log"
 	"net/http"
 	"os"
@@ -31,17 +32,20 @@ func main() {
 		log.Fatalf("[Config Load] || [Failed]: %s", err.Error())
 	}
 
+	c := cache.New(cfg.Cache.TTL, cfg.Cache.Clean)
+
 	db, err := postgres.Init(cfg)
 	if err != nil {
 		log.Fatalf("[Database INIT] || [Failed]: %s", err.Error())
 	}
 
 	repositories := repository.NewRepositories(db)
-	localStorage := storage.NewStorage(cfg.StorageConfig.BaseDir)
+	localStorage := storage.NewStorage(cfg.Storage.BaseDir)
 
 	services := service.NewServices(&service.Deps{
 		Repos:   repositories,
 		Storage: localStorage,
+		Cache:   c,
 	})
 
 	handlers := deliveryHttp.NewHandler(services)

@@ -6,18 +6,19 @@ var (
 	images = []string{".png", ".webp", ".svg", ".jpg", ".jpeg", ".bmp"}
 	videos = []string{".mp4", ".wav", ".mov"}
 	audios = []string{".mp3"}
-	docs = []string{".doc", ".docx", ".pptx", ".xlsx", ".csv"}
-	text = []string{".txt"}
+	docs   = []string{".doc", ".docx", ".pptx", ".xlsx", ".csv"}
+	text   = []string{".txt"}
 
 	types = map[domain.FileType][]string{
 		domain.Image: images,
 		domain.Video: videos,
 		domain.Audio: audios,
-		domain.DOCS: docs,
-		domain.Text: text,
+		domain.DOCS:  docs,
+		domain.Text:  text,
 	}
 )
 
+// DetectType
 // Detect file type by extension and whitelist
 func DetectType(ext string) domain.FileType {
 	for k, v := range types {

@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"image/png"
-	"io/ioutil"
+	"io"
 	"mime/multipart"
 	"os"
 	"path/filepath"
@@ -27,13 +27,13 @@ var folders = map[domain.FileType]string{
 }
 
 type FileService struct {
-	repo repository.Files
+	repo    repository.Files
 	storage *storage.Storage
 }
 
 func NewFileService(repo repository.Files, storage *storage.Storage) *FileService {
 	return &FileService{
-		repo: repo,
+		repo:    repo,
 		storage: storage,
 	}
 }
@@ -52,8 +52,10 @@ func (f *FileService) UploadFile(file *multipart.FileHeader) (uint, error) {
 		return 0, errors.New("unknown file type")
 	}
 
-	data, err := ioutil.ReadAll(openedFile)
-	openedFile.Close()
+	data, err := io.ReadAll(openedFile)
+	if oErr := openedFile.Close(); err != nil {
+		return 0, oErr
+	}
 	if err != nil {
 		return 0, err
 	}
@@ -94,7 +96,7 @@ func (f *FileService) GetFile(id int, params domain.FileParams) ([]byte, error) 
 	}
 
 	// Resize image with requested params
-	newImg, err := resize.ResizeImage(file.Path, params.Width, params.Height)
+	newImg, err := resize.ChangeSize(file.Path, params.Width, params.Height)
 	if err != nil {
 		return nil, err
 	}
@@ -121,6 +123,26 @@ func (f *FileService) Delete(id int) (int, error) {
 
 	// Delete record from db
 	return f.repo.DeleteOne(id)
+}
+
+func (f *FileService) AllFiles(fType string) map[string][]int {
+	if fType == "" {
+		counts := map[string][]int{
+			string(domain.Image): {},
+			string(domain.Video): {},
+			string(domain.Audio): {},
+			string(domain.DOCS):  {},
+			string(domain.Text):  {},
+		}
+
+		for _, v := range f.repo.GetAllIds() {
+			counts[string(v.Type)] = append(counts[string(v.Type)], v.Id)
+		}
+
+		return counts
+	} else {
+		return map[string][]int{fType: f.repo.GetIds(fType)}
+	}
 }
 
 func readFile(readPath string) ([]byte, error) {

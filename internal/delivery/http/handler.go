@@ -16,6 +16,7 @@ func NewHandler(services *service.Service) *Handler {
 }
 
 func (h *Handler) Init(cfg *config.Config) *gin.Engine {
+	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
 
 	router.Use(

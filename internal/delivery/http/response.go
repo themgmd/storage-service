@@ -7,6 +7,7 @@ var (
 	FileNotFound        = "Hoops! The file not in the storage"
 	FileFound           = "The file is found in the storage"
 	FileUploaded        = "The file is uploaded to the storage"
+	FilesIdsFound       = "The files ids is found"
 	InternalServerError = "Hoops! Something was wrong on server. Please try upload another file or write report"
 )
 
@@ -19,14 +20,6 @@ type (
 
 	ResponseInput BaseResponse
 )
-
-func NewResponse(input *ResponseInput) *BaseResponse {
-	return &BaseResponse{
-		StatusCode: input.StatusCode,
-		Message:    input.Message,
-		Data:       input.Data,
-	}
-}
 
 func OkResponse(input *ResponseInput) *BaseResponse {
 	return &BaseResponse{

@@ -7,7 +7,7 @@ import (
 	res "github.com/nfnt/resize"
 )
 
-func ResizeImage(filePath string, width, height uint) (image.Image, error) {
+func ChangeSize(filePath string, width, height uint) (image.Image, error) {
 	// Open file from path
 	openedFile, err := os.Open(filePath)
 	if err != nil {
@@ -20,6 +20,6 @@ func ResizeImage(filePath string, width, height uint) (image.Image, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	return res.Resize(width, height, img, res.Lanczos2), nil
 }

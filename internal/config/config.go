@@ -21,11 +21,11 @@ const (
 
 type (
 	Config struct {
-		HTTP          HTTPConfig
-		StorageConfig StorageConfig
-		Limiter       LimiterConfig
-		CacheTTL      time.Duration `mapstructure:"ttl"`
-		Database      DatabaseConfig
+		HTTP     HTTPConfig
+		Storage  StorageConfig
+		Limiter  LimiterConfig
+		Cache    CacheConfig
+		Database DatabaseConfig
 	}
 
 	HTTPConfig struct {
@@ -40,6 +40,11 @@ type (
 		RPS   int
 		Burst int
 		TTL   time.Duration
+	}
+
+	CacheConfig struct {
+		TTL   time.Duration `mapstructure:"ttl"`
+		Clean time.Duration `mapstructure:"clean"`
 	}
 
 	StorageConfig struct {
@@ -77,7 +82,7 @@ func Init(configDir string) (*Config, error) {
 
 func parseConfigFile(folder string) error {
 	viper.AddConfigPath(folder)
-	viper.SetConfigName("main")
+	viper.SetConfigName(os.Getenv("CONFIG_FILE"))
 
 	if err := viper.ReadInConfig(); err != nil {
 		return err
@@ -98,12 +103,12 @@ func unmarshal(cfg *Config) error {
 		return err
 	}
 
-	return viper.UnmarshalKey("cache.ttl", &cfg.CacheTTL)
+	return viper.UnmarshalKey("cache", &cfg.Cache)
 }
 
 func setFromEnv(cfg *Config) {
 	cfg.Database.Postgres.Password = os.Getenv("DB_PASSWORD")
-	cfg.StorageConfig.BaseDir = os.Getenv("STORAGE_DIR")
+	cfg.Storage.BaseDir = os.Getenv("STORAGE_DIR")
 }
 
 func setupDefaultValues() {

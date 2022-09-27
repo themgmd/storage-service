@@ -12,6 +12,8 @@ const (
 type Files interface {
 	Create(file *domain.File) (uint, error)
 	GetByID(ID int) (*domain.File, error)
+	GetAllIds() []domain.FileTypeIds
+	GetIds(fType string) []int
 	DeleteOne(ID int) (int, error)
 	Clear() error
 }

@@ -10,6 +10,7 @@ import (
 
 func (h *Handler) FileHandlerInit(api *gin.RouterGroup) {
 	api.GET("/file/:id", h.getFileById)
+	api.GET("/files", h.getFiles)
 	api.POST("/file", h.uploadFile)
 }
 
@@ -76,5 +77,24 @@ func (h *Handler) uploadFile(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, CreatedResponse(&ResponseInput{
 		Message: FileUploaded,
 		Data:    map[string]uint{"id": id},
+	}))
+}
+
+func (h *Handler) getFiles(ctx *gin.Context) {
+	var params domain.GetFilesParams
+
+	if err := ctx.ShouldBind(&params); err != nil {
+		ctx.JSON(http.StatusBadRequest, BadRequestResponse(&ResponseInput{
+			Message: CheckInputData,
+			Data:    map[string]string{"error": err.Error()},
+		}))
+		return
+	}
+
+	ids := h.services.Files.AllFiles(params.Type)
+
+	ctx.JSON(http.StatusOK, OkResponse(&ResponseInput{
+		Message: FilesIdsFound,
+		Data:    ids,
 	}))
 }

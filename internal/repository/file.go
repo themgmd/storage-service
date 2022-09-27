@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"github.com/onemgvv/storage-service/internal/domain"
+	"log"
 )
 
 type FileRepository struct {
@@ -49,11 +50,35 @@ func (r *FileRepository) DeleteOne(ID int) (int, error) {
 	return id, nil
 }
 
+func (r *FileRepository) GetAllIds() []domain.FileTypeIds {
+	var ft []domain.FileTypeIds
+	query := fmt.Sprintf("SELECT id, type FROM %s", fileTable)
+
+	err := r.db.Select(&ft, query)
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	return ft
+}
+
+func (r *FileRepository) GetIds(fType string) []int {
+	var ids []int
+	query := fmt.Sprintf("SELECT id FROM %s WHERE $1", fileTable)
+
+	err := r.db.Select(&ids, query, fType)
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	return ids
+}
+
 func (r *FileRepository) Clear() error {
 	query := fmt.Sprintf("TRUNCATE TABLE %s", fileTable)
 	if _, err := r.db.Query(query); err != nil {
 		return err
 	}
-	
+
 	return nil
 }

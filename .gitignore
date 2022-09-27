@@ -2,6 +2,7 @@
 .idea
 .bin
 tmp
+temp
 
 # Environment
 .env
